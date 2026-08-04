@@ -205,7 +205,6 @@
 
   /* ============ MAIN (page 2) ============ */
   #main{
-    position:absolute;
     background: var(--paper);
     background-image: linear-gradient(180deg, var(--mustard-light) 0px, var(--paper) 130px);
   }
@@ -228,7 +227,21 @@
     transition: all .3s ease;
   }
   .stamp-dot.filled{ background: var(--paper-light); }
-  
+
+  <div class="floating-faces" aria-hidden="true">
+  <img
+    class="floating-face face-one"
+    src="assets/icons/face-1.png"
+    alt=""
+  >
+
+  <img
+    class="floating-face face-two"
+    src="assets/icons/face-2.png"
+    alt=""
+  >
+</div>
+
   .content-pad{ padding: 18px 16px 100px; }
 
   /* flight ticket card */
@@ -785,8 +798,7 @@
     z-index:5;
 }
 
-/* ===== FLOATING BOUNCING FACES ===== */
-
+  /* ===== FLOATING BOUNCING FACES ===== */
 .floating-faces{
   position:absolute;
   inset:0;
@@ -800,6 +812,7 @@
   width:72px;
   height:72px;
   object-fit:contain;
+
   filter:drop-shadow(0 8px 10px rgba(74,46,30,.28));
   will-change:transform;
 }
@@ -808,65 +821,103 @@
 .face-one{
   left:5%;
   top:24%;
-  animation:faceOneFloat 6s ease-in-out infinite;
+  animation:
+    faceMoveOne 7s ease-in-out infinite,
+    faceBounceOne 1.4s ease-in-out infinite;
 }
 
 /* รูปที่ 2 */
 .face-two{
   right:6%;
   top:55%;
-  animation:faceTwoFloat 6s ease-in-out .7s infinite;
+  animation:
+    faceMoveTwo 8s ease-in-out infinite,
+    faceBounceTwo 1.4s ease-in-out infinite .7s;
 }
 
-@keyframes faceOneFloat{
+/* เคลื่อนตำแหน่งไปมา */
+@keyframes faceMoveOne{
   0%{
-    transform:translate(0, 0) rotate(-8deg) scale(1);
+    left:5%;
+    top:24%;
+    transform:rotate(-8deg);
   }
 
-  20%{
-    transform:translate(210px, -18px) rotate(7deg) scale(1.08);
+  25%{
+    left:62%;
+    top:30%;
+    transform:rotate(8deg);
   }
 
-  40%{
-    transform:translate(180px, 190px) rotate(-5deg) scale(.96);
+  50%{
+    left:55%;
+    top:68%;
+    transform:rotate(-5deg);
   }
 
-  60%{
-    transform:translate(70px, 260px) rotate(6deg) scale(1.08);
-  }
-
-  80%{
-    transform:translate(-5px, 110px) rotate(-6deg) scale(.98);
+  75%{
+    left:12%;
+    top:58%;
+    transform:rotate(6deg);
   }
 
   100%{
-    transform:translate(0, 0) rotate(-8deg) scale(1);
+    left:5%;
+    top:24%;
+    transform:rotate(-8deg);
   }
 }
 
-@keyframes faceTwoFloat{
+@keyframes faceMoveTwo{
   0%{
-    transform:translate(0, 0) rotate(8deg) scale(1);
+    right:6%;
+    top:55%;
+    transform:rotate(8deg);
   }
 
-  20%{
-    transform:translate(-190px, 22px) rotate(-7deg) scale(1.08);
+  25%{
+    right:58%;
+    top:64%;
+    transform:rotate(-8deg);
   }
 
-  40%{
-    transform:translate(-170px, -180px) rotate(5deg) scale(.96);
+  50%{
+    right:52%;
+    top:22%;
+    transform:rotate(5deg);
   }
 
-  60%{
-    transform:translate(-60px, -250px) rotate(-6deg) scale(1.08);
-  }
-
-  80%{
-    transform:translate(5px, -100px) rotate(6deg) scale(.98);
+  75%{
+    right:10%;
+    top:30%;
+    transform:rotate(-6deg);
   }
 
   100%{
-    transform:translate(0, 0) rotate(8deg) scale(1);
+    right:6%;
+    top:55%;
+    transform:rotate(8deg);
+  }
+}
+
+/* เด้งสลับกัน */
+@keyframes faceBounceOne{
+  0%,100%{
+    margin-top:0;
+  }
+
+  50%{
+    margin-top:-14px;
+  }
+}
+
+@keyframes faceBounceTwo{
+  0%,100%{
+    margin-top:0;
+  }
+
+  50%{
+    margin-top:-14px;
   }
 }
   
@@ -902,30 +953,6 @@
   <!-- MAIN SCREEN -->
   <section id="main" class="screen hidden-right">
     <div class="topbar">
-      <div class="topbar-title">Beijing 2026<span>TRAVEL PASSPORT</span></div>
-      <div class="stamp-tracker" id="stampTracker"></div>
-    </div>
-
-    <div class="floating-faces" aria-hidden="true">
-      <img class="floating-face face-one" src="assets/icons/face-1.png" alt="">
-      <img class="floating-face face-two" src="assets/icons/face-2.png" alt="">
-    </div>
-
-    <div class="content-pad">
-
-      <div class="utility-row">
-            ...
-        </div>
-
-        <!-- ตรงนี้ต้องเป็น Grid เดิมทั้งหมด -->
-        <div id="dayGrid"></div>
-
-        <!-- หรือ card ต่าง ๆ -->
-        ...
-
-    </div>
-
-</section>
       <div class="topbar-title">Beijing 2026<span>TRAVEL PASSPORT</span></div>
       <div class="stamp-tracker" id="stampTracker"></div>
     </div>
