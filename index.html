@@ -1121,14 +1121,14 @@ function fireSuccessBurst(){
 
   const colors = ['#C1502E','#E7BE64','#6B4226','#A83324','#FCF4E2'];
 
-  for(let i = 0; i < 20; i++){
+  for(let i = 0; i < 30; i++){
     const star = document.createElement('span');
     star.className = 'success-star';
     star.textContent = i % 2 === 0 ? '★' : '✦';
     star.style.color = colors[i % colors.length];
 
     const angle = (Math.PI * 2 * i) / 20;
-    const distance = 100 + Math.random() * 110;
+    const distance = 120 + Math.random() * 130;
     const dx = Math.cos(angle) * distance;
     const dy = Math.sin(angle) * distance;
 
