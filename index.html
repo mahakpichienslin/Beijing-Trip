@@ -205,6 +205,7 @@
 
   /* ============ MAIN (page 2) ============ */
   #main{
+    position:absolute;
     background: var(--paper);
     background-image: linear-gradient(180deg, var(--mustard-light) 0px, var(--paper) 130px);
   }
@@ -899,30 +900,45 @@
   </div>
 
   <!-- MAIN SCREEN -->
-  <section id="main" class="screen hidden-right">
-    <div class="topbar">
-      <section id="main" class="screen hidden-right">
+<section id="main" class="screen hidden-right">
 
   <div class="topbar">
-    <!-- เนื้อหา Topbar เดิม -->
+    <div class="topbar-title">
+      Beijing 2026
+      <span>TRAVEL PASSPORT</span>
+    </div>
+
+    <div class="stamp-tracker" id="stampTracker"></div>
   </div>
 
   <div class="floating-faces" aria-hidden="true">
     <img
       class="floating-face face-one"
-      src="assets/icons/face-1.png"
+      src="./assets/icons/face-1.png"
       alt=""
     >
 
     <img
       class="floating-face face-two"
-      src="assets/icons/face-2.png"
+      src="./assets/icons/face-2.png"
       alt=""
     >
   </div>
 
   <div class="content-pad">
-    <!-- เนื้อหาหน้า Main เดิม -->
+
+    <div class="utility-row">
+      <button
+        class="utility-btn"
+        id="reminderBtn"
+        type="button"
+      >
+        ⚠ สิ่งที่ห้ามลืม
+      </button>
+    </div>
+
+    <!-- เนื้อหาเดิมของหน้า Main ต่อจากตรงนี้ -->
+
   </div>
 
 </section>
