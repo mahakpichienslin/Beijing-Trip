@@ -371,6 +371,33 @@
   .succ-btn:active{ transform:translateY(2px); box-shadow:0 1px 0 var(--terracotta-dark); }
   .succ-btn.is-done{ background: var(--brown-soft); box-shadow: 0 3px 0 var(--brown); }
 
+  /* ปุ่มเพิ่ม Day ใหม่ — สไตล์เดียวกับ Successful */
+  .add-day-wrap{
+    display:flex;
+    justify-content:center;
+    margin:4px 0 24px;
+  }
+
+  .add-day-btn{
+    font-family:'Mali',sans-serif;
+    font-weight:700;
+    font-size:13px;
+    border:none;
+    border-radius:20px;
+    padding:9px 20px;
+    min-width:170px;
+    cursor:pointer;
+    background:var(--terracotta-light);
+    color:#fff;
+    box-shadow:0 3px 0 var(--terracotta-dark);
+    transition:all .15s ease;
+  }
+
+  .add-day-btn:active{
+    transform:translateY(2px);
+    box-shadow:0 1px 0 var(--terracotta-dark);
+  }
+
   .day-foot{
     padding:10px 16px 16px;
     display:flex;
@@ -1117,11 +1144,11 @@
         <div class="hotel-line">🏨 <span>Tangfu Hotel — Sanlitun / Embassy District, Dongcheng, Beijing</span></div>
       </div>
 
-      <div class="add-day-wrap">
-        <button id="addDayBtn" class="add-day-btn" type="button">＋ เพิ่มวันใหม่</button>
-      </div>
-
       <div id="daysWrap"></div>
+
+      <div class="add-day-wrap">
+        <button id="addDayBtn" class="add-day-btn" type="button">＋ เพิ่ม Day ใหม่</button>
+      </div>
 
       <div class="end-trip-wrap">
         <button id="endTripBtn"><span class="flap"></span>🎒 จบทริปเที่ยว · End Trip</button>
