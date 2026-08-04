@@ -374,20 +374,65 @@
   /* ============ CONFETTI / SUCCESS BURST ============ */
   .burst-layer{ position:absolute; inset:0; pointer-events:none; z-index:30; overflow:hidden;}
   .success-badge{
-  position:absolute; left:50%; top:40%; transform:translate(-50%,-50%) scale(0);
-  width:180px;              /* ปรับขนาดรูปตามต้องการ */
+  position:absolute;
+  left:50%;
+  top:42%;
+  width:min(58vw, 240px);
+
+  transform:translate(-50%,-50%) scale(0);
+  opacity:0;
+
+  z-index:100;
+  pointer-events:none;
 }
+
 .success-badge img{
-  width:100%; display:block;
-  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.35));
+  width:100%;
+  height:auto;
+  display:block;
+  object-fit:contain;
+
+  filter:drop-shadow(0 12px 22px rgba(0,0,0,0.4));
 }
-  .success-badge.pop{ animation: popStamp 1.1s cubic-bezier(.4,1.8,.4,1) forwards; }
-  @keyframes popStamp{
-    0%{ transform:translate(-50%,-50%) scale(0) rotate(-25deg); opacity:0;}
-    35%{ transform:translate(-50%,-50%) scale(1.15) rotate(-8deg); opacity:1;}
-    55%{ transform:translate(-50%,-50%) scale(1) rotate(-8deg); opacity:1;}
-    100%{ transform:translate(-50%,-50%) scale(0.92) rotate(-8deg); opacity:0;}
+
+.success-badge.pop{
+  animation:successImagePop 1.8s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+
+@keyframes successImagePop{
+  0%{
+    opacity:0;
+    transform:translate(-50%,-50%) scale(0.2) rotate(-15deg);
   }
+
+  20%{
+    opacity:1;
+    transform:translate(-50%,-50%) scale(1.15) rotate(4deg);
+  }
+
+  35%{
+    opacity:1;
+    transform:translate(-50%,-50%) scale(1) rotate(0deg);
+  }
+
+  78%{
+    opacity:1;
+    transform:translate(-50%,-50%) scale(1) rotate(0deg);
+  }
+
+  100%{
+    opacity:0;
+    transform:translate(-50%,-55%) scale(0.9);
+  }
+}
+
+.burst-layer{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:70;
+  overflow:hidden;
+}
   .star-particle{
     position:absolute; will-change: transform, opacity;
   }
@@ -1001,7 +1046,21 @@ const burstLayer = document.getElementById('burstLayer');
 function fireSuccessBurst(){
   const badge = document.createElement('div');
   badge.className = 'success-badge pop';
-  badge.innerHTML = `<img src="assets/icons/success.png" alt="Success">`;
+ const successImage = document.createElement('img');
+
+successImage.src = './assets/icons/success.png?v=2';
+successImage.alt = 'Successful';
+successImage.draggable = false;
+
+successImage.onload = () => {
+  console.log('Success image loaded');
+};
+
+successImage.onerror = () => {
+  console.error('โหลดรูป Success ไม่สำเร็จ:', successImage.src);
+};
+
+badge.appendChild(successImage);
   burstLayer.appendChild(badge);
 
   const colors = ['#C1502E','#E7BE64','#6B4226','#A83324','#FCF4E2'];
@@ -1025,7 +1084,9 @@ function fireSuccessBurst(){
     burstLayer.appendChild(star);
     setTimeout(()=> star.remove(), 1400);
   }
-  setTimeout(()=> badge.remove(), 1150);
+  setTimeout(() => {
+  badge.remove();
+}, 1900);
 }
 
 
