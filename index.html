@@ -709,6 +709,54 @@
   animation:bounceIn 0.6s cubic-bezier(.5,1.6,.4,1) .6s both;
 }
 
+
+/* ===== DEFINITIVE SUCCESS POPUP FIX ===== */
+#successPopup{
+  position:absolute;
+  inset:0;
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+  overflow:hidden;
+  background:rgba(74,46,30,0.18);
+}
+#successPopup.show{
+  display:flex;
+}
+#successPopup .success-popup-image{
+  width:min(72vw, 300px);
+  max-height:70vh;
+  object-fit:contain;
+  display:block;
+  opacity:0;
+  transform:scale(.25) rotate(-12deg);
+  filter:drop-shadow(0 14px 24px rgba(0,0,0,.45));
+}
+#successPopup.show .success-popup-image{
+  animation:successPopupImage 1.8s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes successPopupImage{
+  0%{opacity:0;transform:scale(.25) rotate(-12deg);}
+  18%{opacity:1;transform:scale(1.14) rotate(4deg);}
+  32%{opacity:1;transform:scale(1) rotate(0);}
+  78%{opacity:1;transform:scale(1) rotate(0);}
+  100%{opacity:0;transform:scale(.9) translateY(-18px);}
+}
+#successPopup .success-star{
+  position:absolute;
+  left:50%;
+  top:50%;
+  z-index:1;
+  pointer-events:none;
+  font-size:22px;
+}
+#successPopup .success-popup-image{
+  position:relative;
+  z-index:2;
+}
+
 </style>
 </head>
 <body>
@@ -880,6 +928,9 @@
     </div>
   </div>
 
+  <div id="successPopup" aria-hidden="true">
+    <img class="success-popup-image" src="assets/icons/success.png?v=3" alt="Successful">
+  </div>
   <div class="burst-layer" id="burstLayer"></div>
 </div>
 
@@ -1044,84 +1095,58 @@ document.getElementById('modalYes').addEventListener('click', ()=>{
 /* ================= SUCCESS BURST (stars + stamp) ================= */
 const burstLayer = document.getElementById('burstLayer');
 function fireSuccessBurst(){
-  const badge = document.createElement('div');
-  badge.className = 'success-badge pop';
+  const popup = document.getElementById('successPopup');
+  const image = popup.querySelector('.success-popup-image');
 
-  const successImage = document.createElement('img');
-  successImage.src = './assets/icons/success.png?v=2';
-  successImage.alt = 'Successful';
-  successImage.draggable = false;
+  // ล้างดาวเดิม
+  popup.querySelectorAll('.success-star').forEach(el => el.remove());
 
-  successImage.onload = () => {
-    console.log('Success image loaded');
+  // บังคับโหลดรูปใหม่และแสดง error ชัดเจน
+  image.onerror = () => {
+    console.error('ไม่พบรูป Success:', image.src);
   };
 
-  successImage.onerror = () => {
-    console.error('โหลดรูป Success ไม่สำเร็จ:', successImage.src);
-  };
+  // รีสตาร์ต animation ทุกครั้ง
+  popup.classList.remove('show');
+  void popup.offsetWidth;
+  popup.classList.add('show');
+  popup.setAttribute('aria-hidden', 'false');
 
-  badge.appendChild(successImage);
-  burstLayer.appendChild(badge);
+  const colors = ['#C1502E','#E7BE64','#6B4226','#A83324','#FCF4E2'];
 
-  const colors = [
-    '#C1502E',
-    '#E7BE64',
-    '#6B4226',
-    '#A83324',
-    '#FCF4E2'
-  ];
-
-  for(let i = 0; i < 18; i++){
-    const star = document.createElement('div');
-
-    star.className = 'star-particle';
+  for(let i = 0; i < 20; i++){
+    const star = document.createElement('span');
+    star.className = 'success-star';
     star.textContent = i % 2 === 0 ? '★' : '✦';
-    star.style.left = '50%';
-    star.style.top = '40%';
-    star.style.fontSize = `${10 + Math.random() * 14}px`;
     star.style.color = colors[i % colors.length];
 
-    const angle =
-      (Math.PI * 2 * i) / 18 + Math.random() * 0.4;
-
-    const distance = 90 + Math.random() * 90;
+    const angle = (Math.PI * 2 * i) / 20;
+    const distance = 100 + Math.random() * 110;
     const dx = Math.cos(angle) * distance;
     const dy = Math.sin(angle) * distance;
 
+    popup.appendChild(star);
+
     star.animate(
       [
-        {
-          transform:
-            'translate(-50%,-50%) scale(0) rotate(0deg)',
-          opacity:0
-        },
-        {
-          transform:
-            `translate(calc(-50% + ${dx * 0.4}px), calc(-50% + ${dy * 0.4}px)) scale(1) rotate(180deg)`,
-          opacity:1,
-          offset:0.4
-        },
-        {
-          transform:
-            `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.4) rotate(360deg)`,
-          opacity:0
-        }
+        { transform:'translate(-50%,-50%) scale(0)', opacity:0 },
+        { transform:'translate(-50%,-50%) scale(1)', opacity:1, offset:.2 },
+        { transform:`translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(.35) rotate(360deg)`, opacity:0 }
       ],
       {
-        duration:900 + Math.random() * 400,
-        easing:'cubic-bezier(.2,.7,.3,1)'
+        duration:1100 + Math.random() * 350,
+        easing:'cubic-bezier(.2,.7,.3,1)',
+        fill:'forwards'
       }
     );
 
-    burstLayer.appendChild(star);
-
-    setTimeout(() => {
-      star.remove();
-    }, 1400);
+    setTimeout(() => star.remove(), 1500);
   }
 
-  setTimeout(() => {
-    badge.remove();
+  clearTimeout(window.successPopupTimer);
+  window.successPopupTimer = setTimeout(() => {
+    popup.classList.remove('show');
+    popup.setAttribute('aria-hidden', 'true');
   }, 1900);
 }
 
