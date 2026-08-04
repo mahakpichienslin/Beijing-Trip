@@ -372,7 +372,11 @@
   .succ-btn.is-done{ background: var(--brown-soft); box-shadow: 0 3px 0 var(--brown); }
 
   .day-foot{
-    padding: 10px 16px 16px; display:flex; justify-content:flex-end;
+    padding:10px 16px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:8px;
   }
   .reset-btn{
     font-family:'Special Elite', monospace; font-size:11.5px; color:var(--stamp);
@@ -1113,6 +1117,10 @@
         <div class="hotel-line">🏨 <span>Tangfu Hotel — Sanlitun / Embassy District, Dongcheng, Beijing</span></div>
       </div>
 
+      <div class="add-day-wrap">
+        <button id="addDayBtn" class="add-day-btn" type="button">＋ เพิ่มวันใหม่</button>
+      </div>
+
       <div id="daysWrap"></div>
 
       <div class="end-trip-wrap">
@@ -1181,6 +1189,30 @@
   </div>
 
 
+
+  <!-- ADD DAY POPUP -->
+  <div id="dayEditorOverlay" class="app-overlay">
+    <div class="popup-card">
+      <div class="popup-title" id="dayEditorTitle">เพิ่มวันใหม่</div>
+
+      <label class="editor-field">
+        ชื่อแพลนของวันนี้
+        <input id="dayTitleInput" class="editor-input" type="text" maxlength="120" placeholder="เช่น Free Day หรือ Universal Beijing">
+      </label>
+
+      <label class="editor-field">
+        วันที่
+        <input id="dayDateInput" class="editor-input" type="text" maxlength="40" placeholder="เช่น 14 Nov">
+      </label>
+
+      <div class="editor-help">ระบบจะสร้าง Day ถัดไปให้อัตโนมัติ และจำข้อมูลไว้ในเครื่องนี้</div>
+
+      <div class="editor-actions">
+        <button id="dayCancelBtn" type="button">ยกเลิก</button>
+        <button id="daySaveBtn" type="button">เพิ่มวัน</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ADD / EDIT PLACE POPUP -->
   <div id="placeEditorOverlay" class="app-overlay">
@@ -1397,7 +1429,10 @@ function renderDays(){
         <button class="add-place-btn" data-day="${day.day}" type="button" aria-label="เพิ่มสถานที่ใน Day ${day.day}">+</button>
       </div>
       <div class="place-list"></div>
-      <div class="day-foot"><button class="reset-btn" data-day="${day.day}">↺ Reset แพลนวันนี้</button></div>
+      <div class="day-foot">
+        ${day.day > DEFAULT_TRIP_DATA.length ? `<button class="delete-day-btn" data-day="${day.day}" type="button">🗑 ลบ Day ${day.day}</button>` : ""}
+        <button class="reset-btn" data-day="${day.day}">↺ Reset แพลนวันนี้</button>
+      </div>
     `;
 
     const list = card.querySelector('.place-list');
@@ -1435,6 +1470,12 @@ function renderDays(){
 
     card.querySelector('.add-place-btn').addEventListener('click', ()=>openPlaceEditor(day.day));
     card.querySelector('.reset-btn').addEventListener('click', ()=>openResetModal(day.day));
+
+    const deleteDayBtn = card.querySelector('.delete-day-btn');
+    if(deleteDayBtn){
+      deleteDayBtn.addEventListener('click', ()=>deleteDay(day.day));
+    }
+
     daysWrap.appendChild(card);
   });
 
@@ -1468,6 +1509,88 @@ function onSuccessClick(placeId,itemEl,btnEl){
   fireSuccessBurst();
   updateProgress();
 }
+
+/* ================= ADD / DELETE DAY ================= */
+const dayEditorOverlay = document.getElementById('dayEditorOverlay');
+const dayTitleInput = document.getElementById('dayTitleInput');
+const dayDateInput = document.getElementById('dayDateInput');
+
+function getNextDayNumber(){
+  if(TRIP_DATA.length === 0) return 1;
+  return Math.max(...TRIP_DATA.map(day=>Number(day.day) || 0)) + 1;
+}
+
+function openDayEditor(){
+  const nextDay = getNextDayNumber();
+  document.getElementById('dayEditorTitle').textContent = `เพิ่ม Day ${nextDay}`;
+  dayTitleInput.value = "";
+  dayDateInput.value = "";
+  dayEditorOverlay.classList.add('show');
+  setTimeout(()=>dayTitleInput.focus(),100);
+}
+
+function closeDayEditor(){
+  dayEditorOverlay.classList.remove('show');
+}
+
+function saveDayFromEditor(){
+  const title = dayTitleInput.value.trim();
+  const date = dayDateInput.value.trim();
+  const nextDay = getNextDayNumber();
+
+  if(!title){
+    alert('กรุณาใส่ชื่อแพลนของวันนี้');
+    dayTitleInput.focus();
+    return;
+  }
+
+  TRIP_DATA.push({
+    day:nextDay,
+    date:date || "",
+    title,
+    places:[]
+  });
+
+  saveTripPlan();
+  renderDays();
+  closeDayEditor();
+
+  // เลื่อนไปยัง Day ใหม่
+  setTimeout(()=>{
+    const cards = daysWrap.querySelectorAll('.day-card');
+    const newestCard = cards[cards.length - 1];
+    if(newestCard) newestCard.scrollIntoView({behavior:'smooth',block:'start'});
+  },100);
+}
+
+function deleteDay(dayNumber){
+  const day = TRIP_DATA.find(item=>item.day === Number(dayNumber));
+  if(!day) return;
+
+  if(!confirm(`ลบ Day ${day.day} — ${day.title} ใช่ไหม?`)) return;
+
+  day.places.forEach(place=>delete progress[place.id]);
+  TRIP_DATA = TRIP_DATA.filter(item=>item.day !== Number(dayNumber));
+
+  // เรียงหมายเลขวันใหม่ให้ต่อกัน
+  TRIP_DATA.forEach((item,index)=>{
+    item.day = index + 1;
+  });
+
+  saveTripPlan();
+  saveProgress();
+  renderDays();
+}
+
+document.getElementById('addDayBtn').addEventListener('click',openDayEditor);
+document.getElementById('dayCancelBtn').addEventListener('click',closeDayEditor);
+document.getElementById('daySaveBtn').addEventListener('click',saveDayFromEditor);
+dayEditorOverlay.addEventListener('click',e=>{
+  if(e.target === dayEditorOverlay) closeDayEditor();
+});
+dayTitleInput.addEventListener('keydown',e=>{
+  if(e.key === 'Enter') saveDayFromEditor();
+});
 
 /* ================= ADD / EDIT / DELETE PLACE ================= */
 const placeEditorOverlay = document.getElementById('placeEditorOverlay');
