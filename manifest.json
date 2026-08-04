@@ -4,7 +4,7 @@
   "description": "Beijing Trip Passport 2026",
   "start_url": "./",
   "scope": "./",
-  "display": "standalone",
+  "display": "standalone", 
   "orientation": "portrait",
   "background_color": "#E7BE64",
   "theme_color": "#C1502E",
